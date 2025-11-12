@@ -1,7 +1,6 @@
 import { HeroV2 } from '@/components/sections/HeroV2';
 import { ImpactMetrics } from '@/components/sections/ImpactMetrics';
 import { WhyChooseUsV2 } from '@/components/sections/WhyChooseUsV2';
-import { SuccessStories } from '@/components/sections/SuccessStories';
 import { ProcessTimeline } from '@/components/sections/ProcessTimeline';
 import { StartupsShowcase } from '@/components/sections/StartupsShowcase';
 import { TestimonialsCarousel } from '@/components/sections/TestimonialsCarousel';
@@ -14,7 +13,6 @@ export default function Home() {
       <HeroV2 />
       <ImpactMetrics />
       <WhyChooseUsV2 />
-      <SuccessStories />
       <ProcessTimeline />
       <StartupsShowcase />
       <TestimonialsCarousel />

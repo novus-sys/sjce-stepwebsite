@@ -336,7 +336,7 @@ export default function EventPage() {
               <div className="flex items-center space-x-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
+                    <Button variant="secondary" size="sm" className="bg-white/90 text-gray-900 hover:bg-white border-0 shadow-sm">
                       <Share2 className="w-4 h-4 mr-2" />
                       Share
                     </Button>
@@ -515,30 +515,6 @@ export default function EventPage() {
         </section>
       )}
 
-      {/* Event Details */}
-      <section className="py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <div className="prose prose-lg max-w-none">
-                <h2>About This Event</h2>
-                <p>{event.description}</p>
-                
-                {!isUpcoming && (
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <h3>Event Completed</h3>
-                    <p>This event has already taken place. Thank you to all who attended!</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Speakers Section */}
       {event.event_speakers && event.event_speakers.length > 0 && (

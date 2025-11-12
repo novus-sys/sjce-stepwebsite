@@ -104,11 +104,6 @@ export default function ContactPage() {
     },
   ];
 
-  const quickLinks = [
-    { icon: Calendar, title: 'Schedule a Visit', description: 'Book a campus tour' },
-    { icon: MessageSquare, title: 'Live Chat', description: 'Chat with our team' },
-    { icon: Headphones, title: 'Support Center', description: '24/7 help available' },
-  ];
 
   return (
     <div className="pt-16">
@@ -323,7 +318,7 @@ export default function ContactPage() {
               className="space-y-6"
             >
               {/* Office Hours Card */}
-              <Card className="border-2 border-gray-200 shadow-lg">
+              <Card className="border-2 border-gray-200 shadow-lg mt-8">
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -349,65 +344,36 @@ export default function ContactPage() {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Quick Links */}
-              <Card className="border-2 border-gray-200 shadow-lg">
-                <CardContent className="p-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
-                  <div className="space-y-4">
-                    {quickLinks.map((link, index) => (
-                      <button
-                        key={index}
-                        className="w-full flex items-center space-x-4 p-4 rounded-lg border-2 border-gray-200 hover:border-accent/30 hover:bg-accent/5 transition-all group"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                          <link.icon className="w-5 h-5 text-accent" />
-                        </div>
-                        <div className="flex-1 text-left">
-                          <p className="font-semibold text-gray-900">{link.title}</p>
-                          <p className="text-sm text-gray-600">{link.description}</p>
-                        </div>
-                        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-accent transition-colors" />
-                      </button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Map Card */}
-              <Card className="border-2 border-gray-200 shadow-lg overflow-hidden">
-                <div className="w-full h-64 bg-gradient-to-br from-primary/20 to-accent/20 relative group cursor-pointer">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                        <MapPin className="w-8 h-8 text-accent" />
-                      </div>
-                      <p className="text-gray-900 font-semibold text-lg">View on Map</p>
-                      <p className="text-sm text-gray-600">Click to open in Google Maps</p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Response Time Card */}
-              <Card className="border-2 border-accent/20 bg-gradient-to-br from-accent/5 to-primary/5 shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                      <MessageSquare className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-900 mb-2">Quick Response Guarantee</h3>
-                      <p className="text-sm text-gray-600">
-                        We typically respond to all inquiries within 24 hours during business days. 
-                        For urgent matters, please call us directly.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Map Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-4/5 mx-auto"
+          >
+            <Card className="border-2 border-gray-200 shadow-lg overflow-hidden">
+              <div className="w-full h-80 relative">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3897.994746706506!2d76.6125289!3d12.3161402!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baf7b67b7b7609b%3A0xb265f428562cf9ef!2sSJCE-STEP!5e0!3m2!1sen!2sin!4v1762950864818!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="JSS Science and Technology University Location"
+                ></iframe>
+              </div>
+            </Card>
+          </motion.div>
         </div>
       </section>
 

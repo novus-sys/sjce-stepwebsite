@@ -42,7 +42,6 @@ export default function ArticlePage() {
   const slug = params.slug as string
   const [article, setArticle] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
-  const [liked, setLiked] = useState(false)
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -213,20 +212,10 @@ export default function ArticlePage() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setLiked(!liked)}
-                  className={`border-white/20 text-white hover:bg-white/10 ${liked ? 'bg-white/10' : ''}`}
-                >
-                  <Heart className={`w-4 h-4 mr-2 ${liked ? 'fill-current' : ''}`} />
-                  {liked ? '1' : '0'}
-                </Button>
-                
+              <div className="flex items-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
+                    <Button variant="secondary" size="sm" className="bg-white/90 text-gray-900 hover:bg-white border-0 shadow-sm">
                       <Share2 className="w-4 h-4 mr-2" />
                       Share
                     </Button>

@@ -217,7 +217,8 @@ export function ProcessTimeline() {
           <p className="text-gray-600 text-lg mb-6">
             Ready to start your journey?
           </p>
-          <motion.button
+          <motion.a
+            href="/apply"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2"
@@ -225,7 +226,7 @@ export function ProcessTimeline() {
             <Rocket className="w-5 h-5" />
             Begin Your Application
             <ArrowRight className="w-5 h-5" />
-          </motion.button>
+          </motion.a>
 
           <p className="text-sm text-gray-500 mt-4">
             ⚡ Applications reviewed within 48 hours • No application fee
