@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
 
 interface AdminAuthContextType {
@@ -18,6 +18,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const supabase = createClient()
 
   useEffect(() => {
     // Get initial session
@@ -29,7 +30,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
