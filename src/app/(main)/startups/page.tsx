@@ -386,7 +386,7 @@ export default function StartupsPage() {
                         {/* Tags */}
                         {startup.tags && startup.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mb-4">
-                            {startup.tags.slice(0, 3).map(tag => (
+                            {startup.tags.slice(0, 3).map((tag: string) => (
                               <Badge key={tag} variant="outline" className="text-xs border-gray-300">
                                 {tag}
                               </Badge>
@@ -433,7 +433,7 @@ export default function StartupsPage() {
                               Key Achievements
                             </p>
                             <ul className="space-y-1">
-                              {startup.achievements.slice(0, 2).map((achievement, i) => (
+                              {startup.achievements.slice(0, 2).map((achievement: string, i: number) => (
                                 <li key={i} className="text-xs text-gray-600 flex items-start">
                                   <Target className="w-3 h-3 text-accent mr-1 mt-0.5 flex-shrink-0" />
                                   <span>{achievement}</span>
