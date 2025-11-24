@@ -404,48 +404,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Impact Metrics */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Our Impact
-            </h2>
-            <p className="text-xl text-gray-600">
-              Numbers that tell our story
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {metrics.map((metric, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="border-2 border-gray-100 hover:border-accent/30 transition-all hover:shadow-xl">
-                  <CardContent className="p-8 text-center">
-                    <div className="w-14 h-14 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                      <metric.icon className="w-7 h-7 text-accent" />
-                    </div>
-                    <div className="text-4xl font-bold text-accent mb-2">{metric.value}</div>
-                    <div className="text-gray-600 font-medium">{metric.label}</div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Leadership Team */}
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
