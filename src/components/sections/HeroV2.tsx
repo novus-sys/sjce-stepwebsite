@@ -12,7 +12,7 @@ export function HeroV2() {
   const [isDeleting, setIsDeleting] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   
-  const words = ['Market Leaders', 'Unicorns', 'Success Stories', 'Industry Disruptors'];
+  const words = ['Market Leaders', 'Success Stories', 'Industry Disruptors'];
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
