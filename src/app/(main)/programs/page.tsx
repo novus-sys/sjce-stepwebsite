@@ -133,13 +133,7 @@ export default function ProgramsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {programs.map((program, index) => (
-              <motion.div
-                key={program.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: index * 0.15 }}
-              >
+              <div key={program.id}>
                 <Card className="h-full border-2 border-gray-200 hover:border-accent/50 transition-all hover:shadow-2xl group">
                   <CardContent className="p-8">
                     {/* Icon */}
@@ -188,7 +182,7 @@ export default function ProgramsPage() {
                     </Button>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

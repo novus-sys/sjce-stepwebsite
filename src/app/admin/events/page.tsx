@@ -34,9 +34,9 @@ import {
 } from '@/components/ui/dialog'
 import { 
   Plus, Search, MoreHorizontal, Edit, Trash2, Eye, Calendar, 
-  MapPin, Users, Clock, CheckCircle, XCircle, Upload, Image 
+  MapPin, Users, Clock, CheckCircle, XCircle, Upload, Image, RefreshCw 
 } from 'lucide-react'
-import { fetchEvents, createEvent, uploadEventImage, createClient } from '@/lib/supabase'
+import { fetchEvents, createEvent, updateEvent, uploadEventImage, updateEventStatuses, createClient } from '@/lib/supabase'
 import { useToast } from '@/components/ui/toast'
 
 interface EventData {
@@ -65,6 +65,9 @@ export default function AdminEventsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [editingEvent, setEditingEvent] = useState<EventData | null>(null)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -78,8 +81,32 @@ export default function AdminEventsPage() {
     featured_image: null as File | null
   })
 
+  const resetForm = () => {
+    setNewEvent({
+      title: '',
+      description: '',
+      about: '',
+      event_date: '',
+      event_time: '',
+      location: '',
+      type: '',
+      max_attendees: '',
+      featured_image: null
+    })
+    setImagePreview(null)
+    setIsEditMode(false)
+    setEditingEvent(null)
+  }
+
   const loadEvents = async () => {
     try {
+      // First, update event statuses for any events that have passed
+      const statusUpdateResult = await updateEventStatuses()
+      if (statusUpdateResult.updated > 0) {
+        showToast(`Updated ${statusUpdateResult.updated} event(s) to 'past' status`, 'success')
+      }
+      
+      // Then fetch all events with updated statuses
       const data = await fetchEvents()
       setEvents(data)
     } catch (error) {
@@ -90,8 +117,45 @@ export default function AdminEventsPage() {
     }
   }
 
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      const statusUpdateResult = await updateEventStatuses()
+      const data = await fetchEvents()
+      setEvents(data)
+      
+      if (statusUpdateResult.updated > 0) {
+        showToast(`Refreshed! Updated ${statusUpdateResult.updated} event(s) to 'past' status`, 'success')
+      } else {
+        showToast('Events refreshed successfully', 'success')
+      }
+    } catch (error) {
+      console.error('Failed to refresh events:', error)
+      showToast('Failed to refresh events', 'error')
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   useEffect(() => {
     loadEvents()
+    
+    // Set up periodic status checking every 5 minutes
+    const interval = setInterval(async () => {
+      try {
+        const statusUpdateResult = await updateEventStatuses()
+        if (statusUpdateResult.updated > 0) {
+          // Refresh events if any were updated
+          const data = await fetchEvents()
+          setEvents(data)
+          showToast(`Auto-updated ${statusUpdateResult.updated} event(s) to 'past' status`, 'info')
+        }
+      } catch (error) {
+        console.error('Periodic status update failed:', error)
+      }
+    }, 5 * 60 * 1000) // 5 minutes
+    
+    return () => clearInterval(interval)
   }, [])
 
   const filteredEvents = events.filter(event => {
@@ -158,7 +222,7 @@ export default function AdminEventsPage() {
         }
       }
 
-      // Create event data
+      // Prepare event data
       const eventData = {
         title: newEvent.title,
         description: newEvent.description,
@@ -168,53 +232,57 @@ export default function AdminEventsPage() {
         location: newEvent.location,
         type: newEvent.type || 'workshop',
         max_attendees: newEvent.max_attendees ? parseInt(newEvent.max_attendees) : undefined,
-        featured_image_url: imageUrl || undefined
+        featured_image_url: imageUrl || (isEditMode && editingEvent?.featured_image_url ? editingEvent.featured_image_url : undefined)
       }
 
-      const createdEvent = await createEvent(eventData)
+      let result
+      if (isEditMode && editingEvent) {
+        // Update existing event
+        result = await updateEvent(editingEvent.id, eventData)
+      } else {
+        // Create new event
+        result = await createEvent(eventData)
+      }
 
-      if (createdEvent) {
-        // Add to local state
-        const newEventData: EventData = {
-          id: createdEvent.id,
-          title: createdEvent.title,
-          description: createdEvent.description,
-          event_date: createdEvent.event_date,
-          event_time: createdEvent.event_time,
-          location: createdEvent.location,
-          type: createdEvent.type,
-          max_attendees: createdEvent.max_attendees,
-          registration_link: createdEvent.registration_link,
-          featured_image_url: createdEvent.featured_image_url,
-          status: createdEvent.status,
-          created_at: createdEvent.created_at,
-          slug: createdEvent.slug
+      if (result) {
+        // Update local state
+        const eventDataForState: EventData = {
+          id: result.id,
+          title: result.title,
+          description: result.description,
+          event_date: result.event_date,
+          event_time: result.event_time,
+          location: result.location,
+          type: result.type,
+          max_attendees: result.max_attendees,
+          registration_link: result.registration_link,
+          featured_image_url: result.featured_image_url,
+          status: result.status,
+          created_at: result.created_at,
+          slug: result.slug
         }
 
-        setEvents(prev => [newEventData, ...prev])
+        if (isEditMode) {
+          // Update existing event in state
+          setEvents(prev => prev.map(event => 
+            event.id === result.id ? eventDataForState : event
+          ))
+          showToast('Event updated successfully!', 'success')
+        } else {
+          // Add new event to state
+          setEvents(prev => [eventDataForState, ...prev])
+          showToast('Event created successfully!', 'success')
+        }
 
-        // Reset form
-        setNewEvent({
-          title: '',
-          description: '',
-          about: '',
-          event_date: '',
-          event_time: '',
-          location: '',
-          type: '',
-          max_attendees: '',
-          featured_image: null
-        })
-        setImagePreview(null)
+        // Reset form and close dialog
+        resetForm()
         setIsCreateDialogOpen(false)
-        
-        showToast('Event created successfully!', 'success')
       } else {
-        showToast('Failed to create event. Please try again.', 'error')
+        showToast(`Failed to ${isEditMode ? 'update' : 'create'} event. Please try again.`, 'error')
       }
     } catch (error) {
-      console.error('Error creating event:', error)
-      showToast('An error occurred while creating the event.', 'error')
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} event:`, error)
+      showToast(`An error occurred while ${isEditMode ? 'updating' : 'creating'} the event.`, 'error')
     } finally {
       setIsCreating(false)
     }
@@ -242,7 +310,11 @@ export default function AdminEventsPage() {
         return
       }
 
-      // Populate the create form with the event data
+      // Set edit mode and store the event being edited
+      setIsEditMode(true)
+      setEditingEvent(data)
+      
+      // Populate the form with the event data
       setNewEvent({
         title: data.title,
         description: data.description || '',
@@ -255,11 +327,11 @@ export default function AdminEventsPage() {
         featured_image: null // We don't load the existing image file
       })
 
-      // Clear image preview since we're not loading the existing image
-      setImagePreview(null)
+      // Set image preview if there's an existing image
+      setImagePreview(data.featured_image_url || null)
       setIsCreateDialogOpen(true)
 
-      showToast("Event loaded for editing. Make your changes and create as new version.", "success")
+      showToast("Event loaded for editing.", "success")
     } catch (error) {
       console.error('Edit failed:', error)
       showToast("Failed to load event for editing. Please try again.", "error")
@@ -345,18 +417,29 @@ export default function AdminEventsPage() {
           <p className="text-gray-600">Create and manage events for your startup community</p>
         </div>
         
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Event
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-3">
+          <Button 
+            variant="outline" 
+            onClick={handleManualRefresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refreshing...' : 'Refresh Status'}
+          </Button>
+          
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Event
+              </Button>
+            </DialogTrigger>
           <DialogContent className="sm:max-w-[720px] max-h-[90vh] flex flex-col">
             <DialogHeader className="flex-shrink-0">
-              <DialogTitle>Create New Event</DialogTitle>
+              <DialogTitle>{isEditMode ? 'Edit Event' : 'Create New Event'}</DialogTitle>
               <DialogDescription>
-                Create a new event for your startup community.
+                {isEditMode ? 'Update the event details below.' : 'Create a new event for your startup community.'}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4 overflow-y-auto flex-1 min-h-0">
@@ -502,22 +585,38 @@ export default function AdminEventsPage() {
               </div>
             </div>
             <DialogFooter className="flex-shrink-0 mt-4">
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              <Button variant="outline" onClick={() => {
+                setIsCreateDialogOpen(false)
+                resetForm()
+              }}>
                 Cancel
               </Button>
               <Button onClick={handleCreateEvent} disabled={!newEvent.title.trim() || isCreating}>
                 {isCreating ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Creating...
+                    {isEditMode ? 'Updating...' : 'Creating...'}
                   </>
                 ) : (
-                  'Create Event'
+                  <>
+                    {isEditMode ? (
+                      <>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Update Event
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Event
+                      </>
+                    )}
+                  </>
                 )}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Filters */}

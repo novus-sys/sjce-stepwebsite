@@ -17,16 +17,8 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react'
+import { fetchDashboardStats, fetchRecentActivity, DashboardStats, ActivityItem } from '@/lib/supabase'
 
-interface DashboardStats {
-  totalStartups: number
-  totalBlogs: number
-  upcomingEvents: number
-  pendingApplications: number
-  unreadMessages: number
-  draftBlogs: number
-  recentRegistrations: number
-}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -36,26 +28,30 @@ export default function AdminDashboard() {
     pendingApplications: 0,
     unreadMessages: 0,
     draftBlogs: 0,
-    recentRegistrations: 0
+    recentRegistrations: 0,
+    teamMembers: 0
   })
-
+  const [activities, setActivities] = useState<ActivityItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: Fetch real data from Supabase
-    // For now, using mock data
-    setTimeout(() => {
-      setStats({
-        totalStartups: 24,
-        totalBlogs: 18,
-        upcomingEvents: 3,
-        pendingApplications: 7,
-        unreadMessages: 12,
-        draftBlogs: 4,
-        recentRegistrations: 15
-      })
-      setLoading(false)
-    }, 1000)
+    const loadDashboardData = async () => {
+      try {
+        const [statsData, activityData] = await Promise.all([
+          fetchDashboardStats(),
+          fetchRecentActivity()
+        ])
+        
+        setStats(statsData)
+        setActivities(activityData)
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadDashboardData()
   }, [])
 
   const quickStats = [
@@ -85,7 +81,7 @@ export default function AdminDashboard() {
     },
     {
       title: 'Team Members',
-      value: 8,
+      value: stats.teamMembers,
       icon: Users,
       color: 'text-orange-600',
       bgColor: 'bg-orange-100',
@@ -232,34 +228,24 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                <div>
-                  <p className="text-sm font-medium">New startup application received</p>
-                  <p className="text-xs text-gray-500">2 minutes ago</p>
+              {activities.length > 0 ? (
+                activities.map((activity) => (
+                  <div key={activity.id} className="flex items-start space-x-3">
+                    <div className={`w-2 h-2 ${activity.color} rounded-full mt-2`}></div>
+                    <div>
+                      <p className="text-sm font-medium">{activity.title}</p>
+                      <p className="text-xs text-gray-600">{activity.description}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(activity.timestamp).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-500">No recent activity</p>
                 </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                <div>
-                  <p className="text-sm font-medium">Blog post "AI in Startups" published</p>
-                  <p className="text-xs text-gray-500">1 hour ago</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                <div>
-                  <p className="text-sm font-medium">Event "Demo Day 2024" updated</p>
-                  <p className="text-xs text-gray-500">3 hours ago</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                <div>
-                  <p className="text-sm font-medium">New team member added</p>
-                  <p className="text-xs text-gray-500">1 day ago</p>
-                </div>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -286,10 +272,6 @@ export default function AdminDashboard() {
             <Button variant="outline" className="h-20 flex-col space-y-2">
               <Calendar className="h-6 w-6" />
               <span className="text-sm">Create Event</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex-col space-y-2">
-              <MessageSquare className="h-6 w-6" />
-              <span className="text-sm">Add Testimonial</span>
             </Button>
           </div>
         </CardContent>

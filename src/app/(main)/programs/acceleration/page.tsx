@@ -165,7 +165,7 @@ export default function AccelerationProgramPage() {
                   Apply Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-base px-10 h-14 text-lg">
+              <Button asChild size="lg" variant="outline" className="border-2 border-white text-white bg-white/10 hover:bg-white hover:text-primary text-base px-10 h-14 text-lg">
                 <Link href="#success-stories">See Success Stories</Link>
               </Button>
             </div>
@@ -433,53 +433,6 @@ export default function AccelerationProgramPage() {
         </div>
       </section>
 
-      {/* Mentor Showcase */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Expert Guidance
-            </h2>
-            <p className="text-xl text-gray-600">
-              Learn from growth experts
-            </p>
-          </motion.div>
-
-          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mentors.map((mentor, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="border-2 border-gray-200 hover:border-accent/30 transition-all hover:shadow-lg">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-                      <span className="text-3xl font-bold text-accent">
-                        {mentor.name.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{mentor.name}</h3>
-                    <p className="text-sm font-semibold text-accent mb-2">{mentor.expertise}</p>
-                    <p className="text-sm text-gray-600 mb-3">{mentor.company}</p>
-                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                      {mentor.sessions}
-                    </Badge>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA */}
       <section className="py-24 bg-primary relative overflow-hidden">
@@ -510,7 +463,7 @@ export default function AccelerationProgramPage() {
                   Apply Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-base px-10 h-14 text-lg">
+              <Button asChild size="lg" variant="outline" className="border-2 border-white text-white bg-white/10 hover:bg-white hover:text-primary text-base px-10 h-14 text-lg">
                 <Link href="/contact">Schedule a Call</Link>
               </Button>
             </div>

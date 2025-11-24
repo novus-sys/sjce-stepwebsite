@@ -14,8 +14,6 @@ import {
   FileCheck,
   UserCheck,
   Mail,
-  FolderOpen,
-  Settings,
   LogOut
 } from 'lucide-react'
 
@@ -25,12 +23,9 @@ const navigation = [
   { name: 'Blog & Articles', href: '/admin/blog', icon: FileText },
   { name: 'Events', href: '/admin/events', icon: Calendar },
   { name: 'Team', href: '/admin/team', icon: Users },
-  { name: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare },
   { name: 'Applications', href: '/admin/applications', icon: FileCheck },
   { name: 'Registrations', href: '/admin/registrations', icon: UserCheck },
   { name: 'Contact Submissions', href: '/admin/contacts', icon: Mail },
-  { name: 'Media Library', href: '/admin/media', icon: FolderOpen },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 export function AdminSidebar() {

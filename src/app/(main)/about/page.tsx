@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Target, Eye, TrendingUp, Users, Award, Briefcase, 
   Trophy, Shield, Star, Linkedin, ArrowRight, Building2,
-  GraduationCap, Lightbulb
+  GraduationCap, Lightbulb, ChevronUp, ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
 import { timeline, partners, awards } from '@/data/about';
@@ -33,6 +33,9 @@ export default function AboutPage() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [advisoryMembers, setAdvisoryMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(true);
+  const autoScrollRef = useRef({ isAutoScrolling: true, scrollPosition: 0, animationId: 0 });
 
   // Load team members from database
   useEffect(() => {
@@ -55,52 +58,172 @@ export default function AboutPage() {
     loadMembers();
   }, []);
 
+  // Auto-scroll and scroll button management
   useEffect(() => {
     const scrollContainer = timelineRef.current;
     if (!scrollContainer) return;
 
-    let scrollPosition = 0;
-    const scrollSpeed = 1; // Slower speed - pixels per frame
-    const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+    const scrollSpeed = 0.3; // Much slower speed - pixels per frame
+    const autoScrollState = autoScrollRef.current;
+
+    const updateScrollButtons = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      setCanScrollUp(scrollTop > 5); // Small threshold to avoid precision issues
+      setCanScrollDown(scrollTop < scrollHeight - clientHeight - 5);
+    };
 
     const autoScroll = () => {
-      scrollPosition += scrollSpeed;
+      if (!autoScrollState.isAutoScrolling) return;
+      
+      const { scrollHeight, clientHeight } = scrollContainer;
+      const maxScroll = scrollHeight - clientHeight;
+      
+      autoScrollState.scrollPosition += scrollSpeed;
       
       // Reset to top when reaching bottom
-      if (scrollPosition >= maxScroll) {
-        scrollPosition = 0;
+      if (autoScrollState.scrollPosition >= maxScroll) {
+        autoScrollState.scrollPosition = 0;
       }
       
-      scrollContainer.scrollTop = scrollPosition;
-      requestAnimationFrame(autoScroll);
+      scrollContainer.scrollTop = autoScrollState.scrollPosition;
+      updateScrollButtons();
+      autoScrollState.animationId = requestAnimationFrame(autoScroll);
     };
 
-    const animationId = requestAnimationFrame(autoScroll);
+    // Start auto-scroll
+    autoScrollState.animationId = requestAnimationFrame(autoScroll);
 
-    // Pause on hover or touch
-    const handleMouseEnter = () => {
-      cancelAnimationFrame(animationId);
+    // Disable mouse wheel scrolling
+    const preventWheelScroll = (e: WheelEvent) => {
+      e.preventDefault();
     };
 
-    const handleMouseLeave = () => {
-      requestAnimationFrame(autoScroll);
-    };
-
+    // Pause auto-scroll on touch interaction only
     const handleTouchStart = () => {
-      cancelAnimationFrame(animationId);
+      autoScrollState.isAutoScrolling = false;
+      cancelAnimationFrame(autoScrollState.animationId);
+      updateScrollButtons();
+      
+      // Resume auto-scroll after 3 seconds of no interaction
+      setTimeout(() => {
+        if (scrollContainer && autoScrollRef.current) {
+          autoScrollRef.current.scrollPosition = scrollContainer.scrollTop;
+          autoScrollRef.current.isAutoScrolling = true;
+          autoScrollRef.current.animationId = requestAnimationFrame(autoScroll);
+        }
+      }, 3000);
     };
 
-    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
-    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
-    scrollContainer.addEventListener('touchstart', handleTouchStart);
+    // Add event listeners
+    scrollContainer.addEventListener('wheel', preventWheelScroll, { passive: false });
+    scrollContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+
+    // Initial button state
+    updateScrollButtons();
 
     return () => {
-      cancelAnimationFrame(animationId);
-      scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
-      scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
+      cancelAnimationFrame(autoScrollState.animationId);
+      scrollContainer.removeEventListener('wheel', preventWheelScroll);
       scrollContainer.removeEventListener('touchstart', handleTouchStart);
     };
   }, []);
+
+  // Manual scroll functions
+  const scrollUp = () => {
+    const scrollContainer = timelineRef.current;
+    if (!scrollContainer) return;
+    
+    // Pause auto-scroll
+    autoScrollRef.current.isAutoScrolling = false;
+    cancelAnimationFrame(autoScrollRef.current.animationId);
+    
+    scrollContainer.scrollBy({
+      top: -200,
+      behavior: 'smooth'
+    });
+    
+    // Update button states and sync scroll position after scroll completes
+    setTimeout(() => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      setCanScrollUp(scrollTop > 5);
+      setCanScrollDown(scrollTop < scrollHeight - clientHeight - 5);
+      
+      // Sync auto-scroll position and resume after 3 seconds
+      autoScrollRef.current.scrollPosition = scrollTop;
+      setTimeout(() => {
+        if (autoScrollRef.current) {
+          autoScrollRef.current.isAutoScrolling = true;
+          const autoScroll = () => {
+            if (!autoScrollRef.current.isAutoScrolling) return;
+            
+            const { scrollHeight, clientHeight } = scrollContainer;
+            const maxScroll = scrollHeight - clientHeight;
+            
+            autoScrollRef.current.scrollPosition += 0.3;
+            
+            if (autoScrollRef.current.scrollPosition >= maxScroll) {
+              autoScrollRef.current.scrollPosition = 0;
+            }
+            
+            scrollContainer.scrollTop = autoScrollRef.current.scrollPosition;
+            const { scrollTop: newScrollTop } = scrollContainer;
+            setCanScrollUp(newScrollTop > 5);
+            setCanScrollDown(newScrollTop < scrollHeight - clientHeight - 5);
+            autoScrollRef.current.animationId = requestAnimationFrame(autoScroll);
+          };
+          autoScrollRef.current.animationId = requestAnimationFrame(autoScroll);
+        }
+      }, 3000);
+    }, 300);
+  };
+
+  const scrollDown = () => {
+    const scrollContainer = timelineRef.current;
+    if (!scrollContainer) return;
+    
+    // Pause auto-scroll
+    autoScrollRef.current.isAutoScrolling = false;
+    cancelAnimationFrame(autoScrollRef.current.animationId);
+    
+    scrollContainer.scrollBy({
+      top: 200,
+      behavior: 'smooth'
+    });
+    
+    // Update button states and sync scroll position after scroll completes
+    setTimeout(() => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      setCanScrollUp(scrollTop > 5);
+      setCanScrollDown(scrollTop < scrollHeight - clientHeight - 5);
+      
+      // Sync auto-scroll position and resume after 3 seconds
+      autoScrollRef.current.scrollPosition = scrollTop;
+      setTimeout(() => {
+        if (autoScrollRef.current) {
+          autoScrollRef.current.isAutoScrolling = true;
+          const autoScroll = () => {
+            if (!autoScrollRef.current.isAutoScrolling) return;
+            
+            const { scrollHeight, clientHeight } = scrollContainer;
+            const maxScroll = scrollHeight - clientHeight;
+            
+            autoScrollRef.current.scrollPosition += 0.3;
+            
+            if (autoScrollRef.current.scrollPosition >= maxScroll) {
+              autoScrollRef.current.scrollPosition = 0;
+            }
+            
+            scrollContainer.scrollTop = autoScrollRef.current.scrollPosition;
+            const { scrollTop: newScrollTop } = scrollContainer;
+            setCanScrollUp(newScrollTop > 5);
+            setCanScrollDown(newScrollTop < scrollHeight - clientHeight - 5);
+            autoScrollRef.current.animationId = requestAnimationFrame(autoScroll);
+          };
+          autoScrollRef.current.animationId = requestAnimationFrame(autoScroll);
+        }
+      }, 3000);
+    }, 300);
+  };
   const metrics = [
     { value: '150+', label: 'Startups Incubated', icon: Briefcase },
     { value: '₹50Cr+', label: 'Capital Raised', icon: TrendingUp },
@@ -161,8 +284,36 @@ export default function AboutPage() {
           <div className="max-w-6xl mx-auto">
             {/* Scrollable Timeline Container */}
             <div className="relative h-[500px] md:h-[600px] overflow-hidden">
+              {/* Scroll Controls - Left Side */}
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2">
+                <button
+                  onClick={scrollUp}
+                  disabled={!canScrollUp}
+                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                    canScrollUp 
+                      ? 'bg-white border-accent text-accent hover:bg-accent hover:text-white shadow-lg hover:shadow-xl' 
+                      : 'bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed'
+                  }`}
+                  aria-label="Scroll up"
+                >
+                  <ChevronUp className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={scrollDown}
+                  disabled={!canScrollDown}
+                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                    canScrollDown 
+                      ? 'bg-white border-accent text-accent hover:bg-accent hover:text-white shadow-lg hover:shadow-xl' 
+                      : 'bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed'
+                  }`}
+                  aria-label="Scroll down"
+                >
+                  <ChevronDown className="w-5 h-5" />
+                </button>
+              </div>
+
               {/* Vertical Line */}
-              <div className="absolute left-8 md:left-12 top-0 bottom-0 w-0.5 bg-gray-200 z-0" />
+              <div className="absolute left-16 md:left-20 top-0 bottom-0 w-0.5 bg-gray-200 z-0" />
 
               {/* Spotlight overlay - highlights middle section */}
               <div className="absolute inset-0 pointer-events-none z-10">
@@ -170,10 +321,10 @@ export default function AboutPage() {
                 <div className="absolute bottom-0 left-0 right-0 h-[150px] md:h-[200px] bg-gradient-to-t from-white to-transparent" />
               </div>
 
-              {/* Scrollable Timeline - Hidden scrollbar with auto-scroll */}
+              {/* Scrollable Timeline - Manual scroll only */}
               <div 
                 ref={timelineRef}
-                className="h-full overflow-y-auto px-2 md:px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                className="h-full overflow-y-auto pl-20 md:pl-24 pr-2 md:pr-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
               >
                 <div className="py-[150px] md:py-[200px]">
                   {timeline.map((event, index) => (
@@ -204,7 +355,7 @@ export default function AboutPage() {
                       <div className="relative">
                         {/* Dot on timeline */}
                         <motion.div 
-                          className="absolute -left-[25px] md:-left-[41px] top-2 w-2.5 h-2.5 md:w-3 md:h-3 bg-accent rounded-full border-2 md:border-4 border-white shadow-md transition-all duration-300"
+                          className="absolute -left-[33px] md:-left-[49px] top-2 w-2.5 h-2.5 md:w-3 md:h-3 bg-accent rounded-full border-2 md:border-4 border-white shadow-md transition-all duration-300"
                           whileInView={{ 
                             scale: 1.3,
                             backgroundColor: '#ff6b35'
