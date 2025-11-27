@@ -128,8 +128,11 @@ export default function NewsPage() {
                       </p>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center text-sm text-gray-500">
+                        <div className="flex flex-col text-sm text-gray-500">
                           <span>{new Date(article.created_at).toLocaleDateString()}</span>
+                          <span className="text-xs text-gray-400 mt-1">
+                            by {article.author || article.author_name || 'SJCE-STEP Team'}
+                          </span>
                         </div>
                         
                         <Link href={`/news/${article.slug}`}>

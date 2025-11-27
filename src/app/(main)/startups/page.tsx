@@ -357,8 +357,21 @@ export default function StartupsPage() {
                       <CardContent className="p-6 flex flex-col h-full">
                         {/* Logo & Status */}
                         <div className="flex items-start justify-between mb-4">
-                          <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center">
-                            <Building2 className="w-8 h-8 text-accent" />
+                          <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center overflow-hidden">
+                            {startup.logo_url ? (
+                              <img 
+                                src={startup.logo_url} 
+                                alt={`${startup.name} logo`}
+                                className="w-full h-full object-contain"
+                                onError={(e) => {
+                                  // Fallback to building icon if image fails to load
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  target.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                            ) : null}
+                            <Building2 className={`w-8 h-8 text-accent ${startup.logo_url ? 'hidden' : ''}`} />
                           </div>
                           <Badge className={`${getStatusBadgeColor(startup.status)} border-0 text-xs`}>
                             {startup.status}

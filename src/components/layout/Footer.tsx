@@ -18,16 +18,13 @@ export function Footer() {
               Empowering the next generation of innovators and entrepreneurs.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-background/80 hover:text-primary transition-colors">
+              <a href="https://www.linkedin.com/company/sjce-step/" className="text-background/80 hover:text-primary transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="#" className="text-background/80 hover:text-primary transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-background/80 hover:text-secondary transition-colors">
+              <a href="https://www.facebook.com/sjcestepmysuru" className="text-background/80 hover:text-secondary transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-background/80 hover:text-accent transition-colors">
+              <a href="https://www.instagram.com/sjcestep/" className="text-background/80 hover:text-accent transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
             </div>
@@ -36,13 +33,46 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              {['About', 'Programs', 'Events', 'Startups', 'Team', 'Facilities'].map((item) => (
-                <li key={item}>
-                  <Link href={`/${item.toLowerCase()}`} className="text-background/80 hover:text-primary transition-colors">
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link href="/about" className="text-background/80 hover:text-primary transition-colors">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/programs" className="text-background/80 hover:text-primary transition-colors">
+                  Programs
+                </Link>
+              </li>
+              <li>
+                <Link href="/events" className="text-background/80 hover:text-primary transition-colors">
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link href="/startups" className="text-background/80 hover:text-primary transition-colors">
+                  Startups
+                </Link>
+              </li>
+              <li>
+                <Link href="/team" className="text-background/80 hover:text-primary transition-colors">
+                  Team
+                </Link>
+              </li>
+              <li>
+                <Link href="/facilities" className="text-background/80 hover:text-primary transition-colors">
+                  Facilities
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-background/80 hover:text-primary transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/apply" className="text-background/80 hover:text-primary transition-colors">
+                  Apply
+                </Link>
+              </li>
             </ul>
           </div>
 

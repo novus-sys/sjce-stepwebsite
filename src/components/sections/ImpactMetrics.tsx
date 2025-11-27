@@ -61,7 +61,7 @@ export function ImpactMetrics() {
     },
     {
       icon: TrendingUp,
-      value: 50,
+      value: 20,
       suffix: 'Cr+',
       prefix: '₹',
       label: 'Capital Raised',
@@ -71,7 +71,7 @@ export function ImpactMetrics() {
     },
     {
       icon: Users,
-      value: 200,
+      value: 50,
       suffix: '+',
       label: 'Expert Mentors',
       description: 'Industry veterans',
@@ -89,7 +89,7 @@ export function ImpactMetrics() {
     },
     {
       icon: Globe,
-      value: 15,
+      value: 10,
       suffix: '+',
       label: 'Countries',
       description: 'Global market presence',

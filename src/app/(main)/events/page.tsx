@@ -221,54 +221,6 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* Event Types */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Event Types
-            </h2>
-            <p className="text-xl text-gray-600">
-              Something for everyone in the startup ecosystem
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {eventTypes.map((type, index) => {
-              const Icon = type.icon
-              return (
-                <motion.div
-                  key={type.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="border-2 border-gray-200 hover:border-accent/30 transition-all hover:shadow-lg cursor-pointer">
-                    <CardContent className="p-6">
-                      <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
-                        <Icon className="w-6 h-6 text-accent" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{type.name}</h3>
-                      <p className="text-gray-600 mb-3">{type.description}</p>
-                      <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                        {type.frequency}
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Filters */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

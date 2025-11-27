@@ -184,8 +184,8 @@ export function HeroV2() {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
             >
-              Join <span className="text-accent font-bold">150+ funded startups</span> • 
-              <span className="text-accent font-bold"> ₹50Cr+ raised</span> • 
+              Join <span className="text-accent font-bold">100+ funded startups</span> • 
+              <span className="text-accent font-bold"> ₹20Cr+ raised</span> • 
               <span className="text-accent font-bold"> 92% success rate</span>
             </motion.p>
 
@@ -235,7 +235,7 @@ export function HeroV2() {
                 { icon: Zap, text: '48-hour review', color: 'accent' },
                 { icon: TrendingUp, text: 'Up to ₹25L funding', color: 'accent' },
                 { icon: Award, text: '92% success rate', color: 'primary' },
-                { icon: Rocket, text: '200+ mentors', color: 'primary' },
+                { icon: Rocket, text: '50+ mentors', color: 'primary' },
               ].map((item, index) => (
                 <motion.div
                   key={index}

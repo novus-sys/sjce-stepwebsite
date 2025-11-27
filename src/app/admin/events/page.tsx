@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dialog'
 import { 
   Plus, Search, MoreHorizontal, Edit, Trash2, Eye, Calendar, 
-  MapPin, Users, Clock, CheckCircle, XCircle, Upload, Image, RefreshCw 
+  MapPin, Users, Clock, CheckCircle, XCircle, Upload, Image, RefreshCw, X 
 } from 'lucide-react'
 import { fetchEvents, createEvent, updateEvent, uploadEventImage, updateEventStatuses, createClient } from '@/lib/supabase'
 import { useToast } from '@/components/ui/toast'
@@ -68,6 +68,14 @@ export default function AdminEventsPage() {
   const [editingEvent, setEditingEvent] = useState<EventData | null>(null)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [eventImages, setEventImages] = useState<Array<{
+    file?: File
+    url?: string
+    alt_text: string
+    caption: string
+    is_featured: boolean
+    preview: string
+  }>>([])
 
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -94,6 +102,7 @@ export default function AdminEventsPage() {
       featured_image: null
     })
     setImagePreview(null)
+    setEventImages([])
     setIsEditMode(false)
     setEditingEvent(null)
   }
@@ -201,6 +210,48 @@ export default function AdminEventsPage() {
     setImagePreview(null)
   }
 
+  const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    
+    files.forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const preview = e.target?.result as string
+        setEventImages(prev => [...prev, {
+          file,
+          alt_text: '',
+          caption: '',
+          is_featured: prev.length === 0, // First image is featured by default
+          preview
+        }])
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const updateImageMetadata = (index: number, field: string, value: string | boolean) => {
+    setEventImages(prev => prev.map((img, i) => 
+      i === index ? { ...img, [field]: value } : img
+    ))
+  }
+
+  const removeEventImage = (index: number) => {
+    setEventImages(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const moveImage = (index: number, direction: 'up' | 'down') => {
+    setEventImages(prev => {
+      const newImages = [...prev]
+      const targetIndex = direction === 'up' ? index - 1 : index + 1
+      
+      if (targetIndex >= 0 && targetIndex < newImages.length) {
+        [newImages[index], newImages[targetIndex]] = [newImages[targetIndex], newImages[index]]
+      }
+      
+      return newImages
+    })
+  }
+
   const handleCreateEvent = async () => {
     if (!newEvent.title.trim() || !newEvent.description.trim() || !newEvent.about.trim() || !newEvent.event_date || !newEvent.event_time || !newEvent.location.trim()) {
       showToast('Please fill in all required fields', 'error')
@@ -242,6 +293,34 @@ export default function AdminEventsPage() {
       } else {
         // Create new event
         result = await createEvent(eventData)
+      }
+
+      if (result) {
+        // Handle multiple images upload
+        if (eventImages.length > 0) {
+          const supabase = createClient()
+          
+          for (let i = 0; i < eventImages.length; i++) {
+            const imageData = eventImages[i]
+            
+            if (imageData.file) {
+              // Upload new image
+              const uploadedUrl = await uploadEventImage(imageData.file)
+              if (uploadedUrl) {
+                await supabase
+                  .from('event_images')
+                  .insert({
+                    event_id: result.id,
+                    image_url: uploadedUrl,
+                    alt_text: imageData.alt_text || null,
+                    caption: imageData.caption || null,
+                    is_featured: imageData.is_featured,
+                    display_order: i
+                  })
+              }
+            }
+          }
+        }
       }
 
       if (result) {
@@ -533,55 +612,176 @@ export default function AdminEventsPage() {
                 </div>
               </div>
               
-              {/* Featured Image Upload */}
-              <div className="space-y-2">
-                <Label htmlFor="featured_image">Featured Image</Label>
+              {/* Event Images Upload */}
+              <div className="space-y-4">
+                <Label>Event Images</Label>
+                
+                {/* Upload Area */}
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                  {imagePreview ? (
-                    <div className="space-y-4">
-                      <div className="relative">
-                        <img 
-                          src={imagePreview} 
-                          alt="Preview" 
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          className="absolute top-2 right-2"
-                          onClick={removeImage}
-                        >
-                          ✕
-                        </Button>
-                      </div>
-                      <p className="text-sm text-gray-600">
-                        {newEvent.featured_image?.name}
-                      </p>
+                  <div className="text-center">
+                    <Image className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="mt-4">
+                      <label htmlFor="event_images" className="cursor-pointer">
+                        <span className="mt-2 block text-sm font-medium text-gray-900">
+                          Upload multiple event images
+                        </span>
+                        <span className="mt-1 block text-sm text-gray-500">
+                          PNG, JPG, GIF up to 10MB each. Select multiple files.
+                        </span>
+                      </label>
+                      <input
+                        id="event_images"
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        multiple
+                        onChange={handleMultipleImageUpload}
+                      />
                     </div>
-                  ) : (
-                    <div className="text-center">
-                      <Image className="mx-auto h-12 w-12 text-gray-400" />
-                      <div className="mt-4">
-                        <label htmlFor="featured_image" className="cursor-pointer">
-                          <span className="mt-2 block text-sm font-medium text-gray-900">
-                            Upload event image
-                          </span>
-                          <span className="mt-1 block text-sm text-gray-500">
-                            PNG, JPG, GIF up to 10MB
-                          </span>
-                        </label>
-                        <input
-                          id="featured_image"
-                          type="file"
-                          className="hidden"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                        />
-                      </div>
-                    </div>
-                  )}
+                  </div>
                 </div>
+
+                {/* Image Gallery */}
+                {eventImages.length > 0 && (
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    <h4 className="font-medium text-gray-900">Uploaded Images ({eventImages.length})</h4>
+                    {eventImages.map((image, index) => (
+                      <div key={index} className="border rounded-lg p-4 bg-gray-50">
+                        <div className="flex gap-4">
+                          <div className="flex-shrink-0">
+                            <img 
+                              src={image.preview} 
+                              alt={`Preview ${index + 1}`}
+                              className="w-24 h-20 object-cover rounded-lg"
+                            />
+                          </div>
+                          
+                          <div className="flex-1 space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor={`alt_text_${index}`} className="text-xs">Alt Text</Label>
+                                <Input
+                                  id={`alt_text_${index}`}
+                                  placeholder="Describe the image..."
+                                  value={image.alt_text}
+                                  onChange={(e) => updateImageMetadata(index, 'alt_text', e.target.value)}
+                                  className="text-sm"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`caption_${index}`} className="text-xs">Caption</Label>
+                                <Input
+                                  id={`caption_${index}`}
+                                  placeholder="Image caption..."
+                                  value={image.caption}
+                                  onChange={(e) => updateImageMetadata(index, 'caption', e.target.value)}
+                                  className="text-sm"
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <label className="flex items-center gap-2 text-sm">
+                                <input
+                                  type="checkbox"
+                                  checked={image.is_featured}
+                                  onChange={(e) => updateImageMetadata(index, 'is_featured', e.target.checked)}
+                                  className="rounded"
+                                />
+                                Featured Image
+                              </label>
+                              
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => moveImage(index, 'up')}
+                                  disabled={index === 0}
+                                  className="text-xs px-2"
+                                >
+                                  ↑
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => moveImage(index, 'down')}
+                                  disabled={index === eventImages.length - 1}
+                                  className="text-xs px-2"
+                                >
+                                  ↓
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => removeEventImage(index)}
+                                  className="text-xs px-2"
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Legacy Featured Image Upload (fallback) */}
+                {eventImages.length === 0 && (
+                  <div className="space-y-2">
+                    <Label htmlFor="featured_image">Or upload single featured image</Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                      {imagePreview ? (
+                        <div className="space-y-4">
+                          <div className="relative">
+                            <img 
+                              src={imagePreview} 
+                              alt="Preview" 
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={removeImage}
+                            >
+                              ✕
+                            </Button>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            {newEvent.featured_image?.name}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <Image className="mx-auto h-12 w-12 text-gray-400" />
+                          <div className="mt-4">
+                            <label htmlFor="featured_image" className="cursor-pointer">
+                              <span className="mt-2 block text-sm font-medium text-gray-900">
+                                Upload single event image
+                              </span>
+                              <span className="mt-1 block text-sm text-gray-500">
+                                PNG, JPG, GIF up to 10MB
+                              </span>
+                            </label>
+                            <input
+                              id="featured_image"
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter className="flex-shrink-0 mt-4">

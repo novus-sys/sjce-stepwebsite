@@ -29,8 +29,8 @@ export default function ProgramsPage() {
       title: 'Incubation Program',
       tagline: 'Transform your idea into a thriving startup',
       duration: '12 months',
-      funding: 'Up to ₹25 Lakhs',
       stage: 'Early Stage',
+      funding: 'no funding',
       highlights: [
         'Dedicated workspace & infrastructure',
         'Seed funding support',
@@ -45,10 +45,10 @@ export default function ProgramsPage() {
       title: 'Acceleration Program',
       tagline: 'Scale your startup to new heights',
       duration: '6 months',
-      funding: 'Up to ₹1 Crore',
+      funding: 'Up to ₹50 Lacs',
       stage: 'Growth Stage',
       highlights: [
-        'Growth capital access',
+        'NIDHI PRAYAS Fund access',
         'Strategic partnerships',
         'Investor connections',
         'International expansion support',
@@ -157,7 +157,7 @@ export default function ProgramsPage() {
                     </div>
 
                     {/* Funding */}
-                    {program.funding !== 'No funding' && (
+                    {program.funding !== 'No funding' && program.funding !== 'no funding' && (
                       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                         <p className="text-sm text-gray-600 mb-1">Funding Support</p>
                         <p className="text-xl font-bold text-accent">{program.funding}</p>
@@ -253,7 +253,7 @@ export default function ProgramsPage() {
               { value: '150+', label: 'Startups Supported' },
               { value: '₹50Cr+', label: 'Funding Facilitated' },
               { value: '92%', label: 'Success Rate' },
-              { value: '5000+', label: 'Jobs Created' },
+              { value: '3000+', label: 'Jobs Created' },
             ].map((stat, index) => (
               <motion.div
                 key={index}

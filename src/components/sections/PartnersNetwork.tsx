@@ -2,21 +2,24 @@
 
 import { motion } from 'framer-motion';
 import { Building2, Handshake, Users, TrendingUp } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export function PartnersNetwork() {
   const partners = [
-    { name: 'Sequoia Capital', category: 'VC' },
-    { name: 'Accel Partners', category: 'VC' },
-    { name: 'KSUM', category: 'Government' },
-    { name: 'NASSCOM', category: 'Industry' },
-    { name: 'Google for Startups', category: 'Tech' },
-    { name: 'AWS Activate', category: 'Tech' },
-    { name: 'Microsoft for Startups', category: 'Tech' },
-    { name: 'TiE Bangalore', category: 'Network' },
-    { name: 'IIT Madras', category: 'Academic' },
-    { name: 'IIM Bangalore', category: 'Academic' },
-    { name: 'Infosys', category: 'Corporate' },
-    { name: 'Wipro', category: 'Corporate' },
+    { name: 'CII', category: 'Industry', logo: '/images/partners/cii.png' },
+    { name: 'Startup India', category: 'Government', logo: '/images/partners/startup-india.png' },
+    { name: '#startupindia', category: 'Initiative', logo: '/images/partners/startupindia-hash.png' },
+    { name: 'JSS STEP', category: 'Incubator', logo: '/images/partners/jss-step.png' },
+    { name: 'Government of Karnataka', category: 'Government', logo: '/images/partners/govt-karnataka.png' },
+    { name: 'JSS', category: 'Academic', logo: '/images/partners/jss.png' },
+    { name: 'TiE Mysuru', category: 'Network', logo: '/images/partners/tie-mysuru.png' },
+    { name: 'MSME', category: 'Government', logo: '/images/partners/msme.png' },
+    { name: 'AIM', category: 'Government', logo: '/images/partners/aim.png' },
+    { name: 'Startup Karnataka', category: 'Government', logo: '/images/partners/startup-karnataka.png' },
+    { name: 'NASSCOM', category: 'Industry', logo: '/images/partners/nasscom.png' },
+    { name: 'Make in India', category: 'Initiative', logo: '/images/partners/make-in-india.png' },
+    { name: 'National Innovation Foundation', category: 'Foundation', logo: '/images/partners/nif.png' },
   ];
 
   return (
@@ -40,16 +43,15 @@ export function PartnersNetwork() {
           >
             <Handshake className="w-4 h-4 text-white" />
             <span className="text-sm font-semibold text-white uppercase tracking-wide">
-              Our Ecosystem
+              Ecosystem Partners
             </span>
           </motion.div>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900">
-            Trusted by Leading<br />
-            Partners & Investors
+            ECOSYSTEM PARTNERS
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            We collaborate with top-tier VCs, corporations, and institutions to provide unparalleled support
+            Partnering with leading organizations, SJCE-STEP's ecosystem fosters collaboration and growth, providing startups with valuable resources and connections.
           </p>
         </motion.div>
 
@@ -101,7 +103,7 @@ export function PartnersNetwork() {
         </motion.div>
 
         {/* Partners Grid */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-12">
+        <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-4 mb-12">
           {partners.map((partner, index) => (
             <motion.div
               key={index}
@@ -112,18 +114,16 @@ export function PartnersNetwork() {
               whileHover={{ scale: 1.05, y: -5 }}
               className="group"
             >
-              <div className="bg-white rounded-lg p-4 border-2 border-gray-200 hover:border-accent transition-all hover:shadow-md flex flex-col items-center justify-center aspect-square">
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: '#000080' }}
-                >
-                  <Building2 className="w-6 h-6 text-white" />
+              <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all hover:shadow-md flex items-center justify-center aspect-square">
+                <div className="w-full h-full relative group-hover:scale-105 transition-transform">
+                  <Image
+                    src={partner.logo}
+                    alt={`${partner.name} logo`}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 120px, 120px"
+                  />
                 </div>
-                <p className="text-xs font-semibold text-gray-900 text-center mb-1">
-                  {partner.name}
-                </p>
-                <span className="text-[10px] text-gray-500 px-2 py-0.5 bg-gray-100 rounded-full">
-                  {partner.category}
-                </span>
               </div>
             </motion.div>
           ))}
@@ -140,13 +140,15 @@ export function PartnersNetwork() {
           <p className="text-gray-600 text-base mb-4">
             Want to partner with us?
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 bg-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
-          >
-            Become a Partner
-          </motion.button>
+          <Link href="/contact">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              Become a Partner
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
     </section>

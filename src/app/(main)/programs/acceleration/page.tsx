@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { 
   TrendingUp, Clock, IndianRupee, CheckCircle2, ArrowRight,
   Target, Zap, Globe, LineChart, Handshake, Megaphone,
-  Calendar, Award, Star, Quote, Percent, Users, Network
+  Calendar, Award, Star, Quote, Percent, Users, Network, Rocket
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -24,7 +24,7 @@ export default function AccelerationProgramPage() {
       afterRevenue: '₹5Cr/year',
       funding: '₹50L from SJCE + ₹3Cr Series A',
       quote: 'The acceleration program helped us scale 50x in just 6 months. The investor connections alone were worth it.',
-      image: '/placeholder.jpg',
+      image: '/jss.png',
     },
     {
       name: 'HealthTech Solutions',
@@ -147,7 +147,7 @@ export default function AccelerationProgramPage() {
               </div>
               <div className="bg-accent/20 backdrop-blur-sm border border-accent/30 rounded-lg px-6 py-3">
                 <div className="text-white/70 text-sm mb-1">Funding</div>
-                <div className="text-white font-bold text-lg">Up to ₹1Cr</div>
+                <div className="text-white font-bold text-lg">Up to ₹50lacs</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-6 py-3">
                 <div className="text-white/70 text-sm mb-1">Equity</div>
@@ -249,6 +249,144 @@ export default function AccelerationProgramPage() {
               <div className="aspect-square bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl flex items-center justify-center">
                 <TrendingUp className="w-48 h-48 text-accent/20" />
               </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* NIDHI PRAYAS Section */}
+      <section className="py-24 bg-gradient-to-br from-primary/5 to-accent/5">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0 mb-4">
+                Government Partnership
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                NIDHI PRAYAS Program
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                In association with Department of Science & Technology (DST), Government of India
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="h-full"
+              >
+                <Card className="h-full border-2 border-primary/20 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+                  <CardContent className="p-8 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Award className="w-6 h-6 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">What is NIDHI?</h3>
+                    </div>
+                    
+                    <p className="text-gray-700 leading-relaxed mb-6 flex-grow">
+                      The National Initiative for Developing and Harnessing Innovations (NIDHI) is a comprehensive program by DST, Government of India. It's designed to nurture knowledge-based and technology-driven ideas and innovations into successful startups.
+                    </p>
+                    
+                    <div className="mt-auto">
+                      <div className="flex items-center gap-2 text-primary font-semibold">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span>Government of India Initiative</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="h-full"
+              >
+                <Card className="h-full border-2 border-accent/20 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+                  <CardContent className="p-8 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
+                        <Rocket className="w-6 h-6 text-accent" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">PRAYAS Program</h3>
+                    </div>
+                    
+                    <p className="text-gray-700 leading-relaxed mb-6 flex-grow">
+                      Under NIDHI, the PRAYAS (Promoting and Accelerating Young and Aspiring innovators & startups) program specifically supports idea-stage entrepreneurs to build their first prototype. It provides access to physical infrastructure, technical guidance, and business mentorship.
+                    </p>
+                    
+                    <div className="space-y-3 mt-auto">
+                      <div className="flex items-center gap-2 text-accent">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="font-medium">Physical Infrastructure Access</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-accent">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="font-medium">Technical Guidance</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-accent">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="font-medium">Business Mentorship</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-12"
+            >
+              <Card className="border-2 border-gray-200 bg-white">
+                <CardContent className="p-8">
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">SJCE-STEP & NIDHI PRAYAS Partnership</h3>
+                    <p className="text-gray-600 max-w-3xl mx-auto">
+                      As a NIDHI PRAYAS partner, SJCE-STEP provides government-backed support to transform innovative ideas into market-ready prototypes, bridging the gap between ideation and commercialization.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                        <Target className="w-8 h-8 text-primary" />
+                      </div>
+                      <h4 className="font-bold text-gray-900 mb-2">Idea to Prototype</h4>
+                      <p className="text-sm text-gray-600">Transform concepts into working prototypes</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                        <Handshake className="w-8 h-8 text-accent" />
+                      </div>
+                      <h4 className="font-bold text-gray-900 mb-2">Government Support</h4>
+                      <p className="text-sm text-gray-600">Backed by DST, Government of India</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                        <Zap className="w-8 h-8 text-primary" />
+                      </div>
+                      <h4 className="font-bold text-gray-900 mb-2">Fast-track Growth</h4>
+                      <p className="text-sm text-gray-600">Accelerated path to market readiness</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
           </div>
         </div>

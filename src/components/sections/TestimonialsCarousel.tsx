@@ -1,34 +1,11 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { testimonials } from '@/data/testimonials';
-import { Quote, MessageCircle, ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Quote, MessageCircle, Star } from 'lucide-react';
 
 export function TestimonialsCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-
-  const visibleTestimonials = 3;
-  const maxIndex = Math.max(0, testimonials.length - visibleTestimonials);
-
-  const next = () => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-  };
-
-  const prev = () => {
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
-  };
-
-  useEffect(() => {
-    const interval = setInterval(next, 5000);
-    return () => clearInterval(interval);
-  }, [currentIndex]);
-
-  const visibleItems = testimonials.slice(currentIndex, currentIndex + visibleTestimonials);
 
   return (
     <section className="py-24 bg-gradient-to-br from-white via-orange-50/20 to-white relative overflow-hidden">
@@ -63,41 +40,19 @@ export function TestimonialsCarousel() {
           </p>
         </motion.div>
 
-        {/* Carousel Container */}
-        <div className="relative max-w-7xl mx-auto">
-          {/* Navigation Buttons */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between pointer-events-none z-20">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={prev}
-              className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all pointer-events-auto -ml-6"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={next}
-              className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all pointer-events-auto -mr-6"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </motion.button>
-          </div>
-
+        {/* Testimonials Container */}
+        <div className="max-w-7xl mx-auto">
           {/* Testimonials Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <AnimatePresence mode="wait" initial={false}>
-              {visibleItems.map((testimonial, index) => (
-                <motion.div
-                  key={`${testimonial.id}-${currentIndex}`}
-                  initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                >
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+              >
                   <div className="h-full bg-white/90 backdrop-blur-sm rounded-2xl p-8 border-2 border-gray-100 hover:border-accent/40 transition-all hover:shadow-2xl group relative overflow-hidden">
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -146,27 +101,7 @@ export function TestimonialsCarousel() {
                     {/* Decorative Corner */}
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-tr-full" />
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-
-          {/* Dots Indicator */}
-          <div className="flex justify-center gap-2 mt-8">
-            {[...Array(maxIndex + 1)].map((_, index) => (
-              <motion.button
-                key={index}
-                onClick={() => {
-                  setDirection(index > currentIndex ? 1 : -1);
-                  setCurrentIndex(index);
-                }}
-                whileHover={{ scale: 1.2 }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex
-                    ? 'bg-accent w-8'
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-              />
+              </motion.div>
             ))}
           </div>
         </div>

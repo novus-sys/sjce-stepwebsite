@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     domains: [
       'localhost',
       // Add your Supabase storage domain here
-      // 'your-project.supabase.co'
+      'ruxpmrprsqxkfbodrune.supabase.co'
     ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

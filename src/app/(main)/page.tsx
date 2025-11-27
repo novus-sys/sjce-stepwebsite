@@ -5,7 +5,7 @@ import { ProcessTimeline } from '@/components/sections/ProcessTimeline';
 import { StartupsShowcase } from '@/components/sections/StartupsShowcase';
 import { TestimonialsCarousel } from '@/components/sections/TestimonialsCarousel';
 import { PartnersNetwork } from '@/components/sections/PartnersNetwork';
-import { PremiumCTA } from '@/components/sections/PremiumCTA';
+// import { PremiumCTA } from '@/components/sections/PremiumCTA';
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
       <StartupsShowcase />
       <TestimonialsCarousel />
       <PartnersNetwork />
-      <PremiumCTA />
+      {/* <PremiumCTA /> */}
     </div>
   );
 }

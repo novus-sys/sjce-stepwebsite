@@ -9,6 +9,7 @@ import {
   User, Trophy, BookOpen, Award, TrendingUp, Star,
   Facebook, Twitter, Linkedin, Link as LinkIcon, ArrowRight
 } from 'lucide-react'
+import { ImageCarousel } from '@/components/ui/image-carousel'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +58,14 @@ interface EventData {
     photo_url?: string
     linkedin_url?: string
   }>
+  event_images?: Array<{
+    id: string
+    image_url: string
+    alt_text?: string
+    caption?: string
+    is_featured?: boolean
+    display_order: number
+  }>
 }
 
 export default function EventPage() {
@@ -96,6 +105,14 @@ export default function EventPage() {
               bio,
               photo_url,
               linkedin_url
+            ),
+            event_images (
+              id,
+              image_url,
+              alt_text,
+              caption,
+              is_featured,
+              display_order
             )
           `)
           .eq('slug', slug)
@@ -469,8 +486,8 @@ export default function EventPage() {
         </div>
       </section>
 
-      {/* Event Image */}
-      {event.featured_image_url && (
+      {/* Event Images Carousel */}
+      {((event.event_images && event.event_images.length > 0) || event.featured_image_url) && (
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
@@ -479,13 +496,25 @@ export default function EventPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <div className="aspect-video overflow-hidden rounded-lg">
-                  <img 
-                    src={event.featured_image_url} 
-                    alt={event.title}
-                    className="w-full h-full object-cover"
+                {event.event_images && event.event_images.length > 0 ? (
+                  <ImageCarousel 
+                    images={event.event_images.sort((a, b) => a.display_order - b.display_order)}
+                    showThumbnails={event.event_images.length > 1}
+                    showFullscreen={true}
                   />
-                </div>
+                ) : event.featured_image_url ? (
+                  <ImageCarousel 
+                    images={[{
+                      id: 'featured',
+                      image_url: event.featured_image_url,
+                      alt_text: event.title,
+                      caption: undefined,
+                      is_featured: true
+                    }]}
+                    showThumbnails={false}
+                    showFullscreen={true}
+                  />
+                ) : null}
               </motion.div>
             </div>
           </div>

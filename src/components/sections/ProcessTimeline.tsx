@@ -24,7 +24,7 @@ export function ProcessTimeline() {
     },
     {
       icon: Users,
-      title: 'Interview',
+      title: 'Assesment',
       duration: '1-2 weeks',
       description: 'Meet with our expert panel and pitch your idea',
       details: [

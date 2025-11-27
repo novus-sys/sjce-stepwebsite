@@ -135,13 +135,7 @@ export default function ContactPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {contactMethods.map((method, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
+              <div key={index}>
                 <Card className="h-full border-2 border-gray-200 hover:border-accent/30 transition-all hover:shadow-xl group">
                   <CardContent className="p-8 text-center">
                     <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-accent/20 transition-colors">
@@ -158,7 +152,7 @@ export default function ContactPage() {
                     </a>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -197,7 +191,7 @@ export default function ContactPage() {
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          placeholder="John Doe" 
+ 
                           required 
                           className="h-12 border-gray-300 focus:border-accent"
                         />
@@ -212,7 +206,7 @@ export default function ContactPage() {
                           type="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          placeholder="john@example.com" 
+                          placeholder="vikram@example.com" 
                           required 
                           className="h-12 border-gray-300 focus:border-accent"
                         />
