@@ -2,12 +2,56 @@
 
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { startups } from '@/data/startups';
 import { ArrowUpRight, Star, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { fetchPublishedStartups } from '@/lib/supabase';
+
+interface DatabaseStartup {
+  id: string;
+  name: string;
+  tagline?: string;
+  description?: string;
+  logo_url?: string;
+  website?: string;
+  category?: string;
+  founded_year?: number;
+  funding_amount?: number;
+  funding_stage?: string;
+  team_size_min?: number;
+  team_size_max?: number;
+  status: 'active' | 'graduated' | 'exited';
+  achievements?: string[];
+  tags?: string[];
+  batch?: string;
+  is_featured: boolean;
+  contact_email?: string;
+  contact_phone?: string;
+}
 
 export function StartupsShowcase() {
-  const featuredStartups = startups.slice(0, 5);
+  const [featuredStartups, setFeaturedStartups] = useState<DatabaseStartup[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStartups = async () => {
+      try {
+        const startups = await fetchPublishedStartups();
+        // Get featured startups first, then fill with others up to 5
+        const featured = startups.filter(startup => startup.is_featured);
+        const others = startups.filter(startup => !startup.is_featured);
+        const combined = [...featured, ...others].slice(0, 5);
+        setFeaturedStartups(combined);
+      } catch (error) {
+        console.error('Failed to load startups:', error);
+        setFeaturedStartups([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStartups();
+  }, []);
 
   return (
     <section className="py-24 bg-white relative overflow-hidden">
@@ -51,23 +95,32 @@ export function StartupsShowcase() {
 
         {/* Horizontal Scrolling Carousel */}
         <div className="relative mb-12">
-          <div className="overflow-hidden">
-            <motion.div
-              className="flex gap-6"
-              animate={{
-                x: [0, -2000],
-              }}
-              transition={{
-                x: {
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: 30,
-                  ease: "linear",
-                },
-              }}
-            >
-              {/* Duplicate startups for infinite loop */}
-              {[...featuredStartups, ...featuredStartups, ...featuredStartups].map((startup, index) => (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-gray-500">Loading startups...</div>
+            </div>
+          ) : featuredStartups.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-gray-500">No startups found</div>
+            </div>
+          ) : (
+            <div className="overflow-hidden">
+              <motion.div
+                className="flex gap-6"
+                animate={{
+                  x: [0, -2000],
+                }}
+                transition={{
+                  x: {
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    duration: 30,
+                    ease: "linear",
+                  },
+                }}
+              >
+                {/* Duplicate startups for infinite loop */}
+                {[...featuredStartups, ...featuredStartups, ...featuredStartups].map((startup, index) => (
                 <motion.div
                   key={`${startup.id}-${index}`}
                   whileHover={{ y: -10, scale: 1.02 }}
@@ -77,13 +130,28 @@ export function StartupsShowcase() {
                     {/* Header */}
                     <div className="flex items-start justify-between mb-4">
                       <motion.div
-                        className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg"
-                        style={{ backgroundColor: '#000080' }}
+                        className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg overflow-hidden"
+                        style={{ backgroundColor: startup.logo_url ? 'transparent' : '#000080' }}
                         whileHover={{ rotate: 5, scale: 1.1 }}
                       >
-                        <span className="text-2xl font-bold text-white">
-                          {startup.name.charAt(0)}
-                        </span>
+                        {startup.logo_url ? (
+                          <img
+                            src={startup.logo_url}
+                            alt={`${startup.name} logo`}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              // Fallback to initial letter if image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.parentElement!.style.backgroundColor = '#000080';
+                              target.parentElement!.innerHTML = `<span class="text-2xl font-bold text-white">${startup.name.charAt(0)}</span>`;
+                            }}
+                          />
+                        ) : (
+                          <span className="text-2xl font-bold text-white">
+                            {startup.name.charAt(0)}
+                          </span>
+                        )}
                       </motion.div>
                       <Badge className="bg-accent/10 text-accent border-0 font-semibold">
                         {startup.category}
@@ -101,19 +169,11 @@ export function StartupsShowcase() {
                     </p>
 
                     {/* Metrics */}
-                    <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-gray-100">
+                    <div className="mb-4 pb-4 border-b border-gray-100">
                       <div>
                         <div className="text-xs text-gray-500 mb-1">Founded</div>
-                        <div className="font-semibold text-gray-900">{startup.founded}</div>
+                        <div className="font-semibold text-gray-900">{startup.founded_year || 'N/A'}</div>
                       </div>
-                      {startup.funding && (
-                        <div>
-                          <div className="text-xs text-gray-500 mb-1">Funding</div>
-                          <div className="font-semibold text-accent">
-                            {startup.funding}
-                          </div>
-                        </div>
-                      )}
                     </div>
 
                     {/* Achievements */}
@@ -143,9 +203,10 @@ export function StartupsShowcase() {
                     )}
                   </div>
                 </motion.div>
-              ))}
-            </motion.div>
-          </div>
+                ))}
+              </motion.div>
+            </div>
+          )}
         </div>
 
         {/* Bottom CTA */}
@@ -156,15 +217,17 @@ export function StartupsShowcase() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2"
-          >
-            <TrendingUp className="w-5 h-5" />
-            Explore All 150+ Startups
-            <ArrowUpRight className="w-5 h-5" />
-          </motion.button>
+          <Link href="/startups">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2"
+            >
+              <TrendingUp className="w-5 h-5" />
+              Explore All Startups
+              <ArrowUpRight className="w-5 h-5" />
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
     </section>
