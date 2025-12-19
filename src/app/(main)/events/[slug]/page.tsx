@@ -84,7 +84,6 @@ export default function EventPage() {
     email: '',
     phone: '',
     organization: '',
-    dietary_requirements: '',
     questions: ''
   })
 
@@ -215,7 +214,6 @@ export default function EventPage() {
         email: registrationForm.email,
         phone: registrationForm.phone,
         organization: registrationForm.organization,
-        dietary_requirements: registrationForm.dietary_requirements,
         questions: registrationForm.questions
       })
 
@@ -229,7 +227,6 @@ export default function EventPage() {
           email: '',
           phone: '',
           organization: '',
-          dietary_requirements: '',
           questions: ''
         })
         // Refresh registration count
@@ -274,6 +271,9 @@ export default function EventPage() {
 
   const isUpcoming = new Date(event.event_date) > new Date()
   const EventIcon = getEventIcon(event.type)
+  
+  // Disable registration for specific events
+  const isRegistrationDisabled = event.slug === 'democratizing-ai-resources-ai-for-digital-public-infrastructure'
 
   return (
     <div className="min-h-screen pt-16">
@@ -384,9 +384,11 @@ export default function EventPage() {
                       <Button 
                         size="lg" 
                         className="bg-accent text-white hover:bg-accent/90"
-                        disabled={event.max_attendees ? registrationCount >= event.max_attendees : false}
+                        disabled={isRegistrationDisabled || (event.max_attendees ? registrationCount >= event.max_attendees : false)}
                       >
-                        {event.max_attendees && registrationCount >= event.max_attendees 
+                        {isRegistrationDisabled 
+                          ? 'Registration Closed'
+                          : event.max_attendees && registrationCount >= event.max_attendees 
                           ? 'Event Full' 
                           : 'Register Now'
                         } 
@@ -441,15 +443,6 @@ export default function EventPage() {
                               onChange={(e) => setRegistrationForm({...registrationForm, organization: e.target.value})}
                             />
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="dietary">Dietary Requirements</Label>
-                          <Input
-                            id="dietary"
-                            placeholder="Any dietary restrictions or preferences"
-                            value={registrationForm.dietary_requirements}
-                            onChange={(e) => setRegistrationForm({...registrationForm, dietary_requirements: e.target.value})}
-                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="questions">Questions or Comments</Label>

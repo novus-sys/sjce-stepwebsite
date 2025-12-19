@@ -783,7 +783,6 @@ export async function registerForEvent(registrationData: {
   email: string
   phone?: string
   organization?: string
-  dietary_requirements?: string
   questions?: string
 }) {
   const supabase = createClient()
@@ -809,14 +808,12 @@ export async function registerForEvent(registrationData: {
         email: registrationData.email,
         phone: registrationData.phone,
         organization: registrationData.organization,
-        dietary_requirements: registrationData.dietary_requirements,
         questions: registrationData.questions,
         status: 'registered',
         // Also populate legacy columns for compatibility
         attendee_name: registrationData.name,
         attendee_email: registrationData.email,
-        attendee_phone: registrationData.phone,
-        special_requirements: registrationData.dietary_requirements
+        attendee_phone: registrationData.phone
       })
       .select()
       .single()
