@@ -272,8 +272,9 @@ export default function EventPage() {
   const isUpcoming = new Date(event.event_date) > new Date()
   const EventIcon = getEventIcon(event.type)
   
-  // Disable registration for specific events
-  const isRegistrationDisabled = event.slug === 'democratizing-ai-resources-ai-for-digital-public-infrastructure'
+  // Special registration handling for specific events
+  const hasExternalRegistration = event.slug === 'democratizing-ai-resources-ai-for-digital-public-infrastructure'
+  const externalRegistrationUrl = 'https://forms.gle/zRU9LNxr6juHmrdQA'
 
   return (
     <div className="min-h-screen pt-16">
@@ -379,22 +380,35 @@ export default function EventPage() {
                 </DropdownMenu>
 
                 {isUpcoming && (
-                  <Dialog open={isRegistrationOpen} onOpenChange={setIsRegistrationOpen}>
-                    <DialogTrigger asChild>
+                  <>
+                    {hasExternalRegistration ? (
                       <Button 
                         size="lg" 
                         className="bg-accent text-white hover:bg-accent/90"
-                        disabled={isRegistrationDisabled || (event.max_attendees ? registrationCount >= event.max_attendees : false)}
+                        onClick={() => window.open(externalRegistrationUrl, '_blank')}
+                        disabled={event.max_attendees ? registrationCount >= event.max_attendees : false}
                       >
-                        {isRegistrationDisabled 
-                          ? 'Registration Closed'
-                          : event.max_attendees && registrationCount >= event.max_attendees 
+                        {event.max_attendees && registrationCount >= event.max_attendees 
                           ? 'Event Full' 
                           : 'Register Now'
                         } 
                         <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
-                    </DialogTrigger>
+                    ) : (
+                      <Dialog open={isRegistrationOpen} onOpenChange={setIsRegistrationOpen}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            size="lg" 
+                            className="bg-accent text-white hover:bg-accent/90"
+                            disabled={event.max_attendees ? registrationCount >= event.max_attendees : false}
+                          >
+                            {event.max_attendees && registrationCount >= event.max_attendees 
+                              ? 'Event Full' 
+                              : 'Register Now'
+                            } 
+                            <ArrowRight className="ml-2 h-5 w-5" />
+                          </Button>
+                        </DialogTrigger>
                     <DialogContent className="sm:max-w-[500px]">
                       <DialogHeader>
                         <DialogTitle>Register for {event.title}</DialogTitle>
@@ -471,7 +485,9 @@ export default function EventPage() {
                         </Button>
                       </DialogFooter>
                     </DialogContent>
-                  </Dialog>
+                      </Dialog>
+                    )}
+                  </>
                 )}
               </div>
             </div>
