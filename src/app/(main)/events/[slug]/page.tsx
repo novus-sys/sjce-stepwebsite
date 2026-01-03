@@ -163,6 +163,7 @@ export default function EventPage() {
       case 'masterclass': return Award
       case 'competition': return TrendingUp
       case 'celebration': return Star
+      case 'expo-exhibition': return Trophy
       default: return Calendar
     }
   }
@@ -272,9 +273,9 @@ export default function EventPage() {
   const isUpcoming = new Date(event.event_date) > new Date()
   const EventIcon = getEventIcon(event.type)
   
-  // Special registration handling for specific events
-  const hasExternalRegistration = event.slug === 'democratizing-ai-resources-ai-for-digital-public-infrastructure'
-  const externalRegistrationUrl = 'https://forms.gle/zRU9LNxr6juHmrdQA'
+  // Use registration_link from event data if available
+  const hasExternalRegistration = !!event.registration_link
+  const externalRegistrationUrl = event.registration_link || ''
 
   return (
     <div className="min-h-screen pt-16">
@@ -341,6 +342,7 @@ export default function EventPage() {
             </div>
 
             <div className="flex items-center justify-between">
+              {/* Commented out registration count display
               <div className="flex items-center space-x-4">
                 <div className="flex items-center text-white/80">
                   <Users className="w-5 h-5 mr-2" />
@@ -350,6 +352,8 @@ export default function EventPage() {
                   </span>
                 </div>
               </div>
+              */}
+              <div></div>
 
               <div className="flex items-center space-x-4">
                 <DropdownMenu>
@@ -379,116 +383,123 @@ export default function EventPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                {isUpcoming && (
-                  <>
-                    {hasExternalRegistration ? (
-                      <Button 
-                        size="lg" 
-                        className="bg-accent text-white hover:bg-accent/90"
-                        onClick={() => window.open(externalRegistrationUrl, '_blank')}
-                        disabled={event.max_attendees ? registrationCount >= event.max_attendees : false}
-                      >
-                        {event.max_attendees && registrationCount >= event.max_attendees 
-                          ? 'Event Full' 
-                          : 'Register Now'
-                        } 
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    ) : (
-                      <Dialog open={isRegistrationOpen} onOpenChange={setIsRegistrationOpen}>
-                        <DialogTrigger asChild>
-                          <Button 
-                            size="lg" 
-                            className="bg-accent text-white hover:bg-accent/90"
-                            disabled={event.max_attendees ? registrationCount >= event.max_attendees : false}
-                          >
-                            {event.max_attendees && registrationCount >= event.max_attendees 
-                              ? 'Event Full' 
-                              : 'Register Now'
-                            } 
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                          </Button>
-                        </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px]">
-                      <DialogHeader>
-                        <DialogTitle>Register for {event.title}</DialogTitle>
-                        <DialogDescription>
-                          Fill out the form below to register for this event.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="name">Full Name *</Label>
-                            <Input
-                              id="name"
-                              placeholder="Your full name"
-                              value={registrationForm.name}
-                              onChange={(e) => setRegistrationForm({...registrationForm, name: e.target.value})}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="email">Email *</Label>
-                            <Input
-                              id="email"
-                              type="email"
-                              placeholder="your@email.com"
-                              value={registrationForm.email}
-                              onChange={(e) => setRegistrationForm({...registrationForm, email: e.target.value})}
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input
-                              id="phone"
-                              placeholder="+91 9876543210"
-                              value={registrationForm.phone}
-                              onChange={(e) => setRegistrationForm({...registrationForm, phone: e.target.value})}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="organization">Organization</Label>
-                            <Input
-                              id="organization"
-                              placeholder="Company/University"
-                              value={registrationForm.organization}
-                              onChange={(e) => setRegistrationForm({...registrationForm, organization: e.target.value})}
-                            />
-                          </div>
+                {isUpcoming && hasExternalRegistration && (
+                  <Button 
+                    size="lg" 
+                    className="bg-accent text-white hover:bg-accent/90"
+                    onClick={() => window.open(externalRegistrationUrl, '_blank')}
+                    disabled={event.max_attendees ? registrationCount >= event.max_attendees : false}
+                  >
+                    {event.max_attendees && registrationCount >= event.max_attendees 
+                      ? 'Event Full' 
+                      : 'Register Now'
+                    } 
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                )}
+                {isUpcoming && !hasExternalRegistration && (
+                  <Button 
+                    size="lg" 
+                    className="bg-accent text-white hover:bg-accent/90"
+                    disabled={true}
+                  >
+                    Registration Coming Soon
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                )}
+                {/* Commented out registration modal - now using registration_link field instead
+                <Dialog open={isRegistrationOpen} onOpenChange={setIsRegistrationOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="lg" 
+                      className="bg-accent text-white hover:bg-accent/90"
+                      disabled={event.max_attendees ? registrationCount >= event.max_attendees : false}
+                    >
+                      {event.max_attendees && registrationCount >= event.max_attendees 
+                        ? 'Event Full' 
+                        : 'Register Now'
+                      } 
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                      <DialogTitle>Register for {event.title}</DialogTitle>
+                      <DialogDescription>
+                        Fill out the form below to register for this event.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name *</Label>
+                          <Input
+                            id="name"
+                            placeholder="Your full name"
+                            value={registrationForm.name}
+                            onChange={(e) => setRegistrationForm({...registrationForm, name: e.target.value})}
+                          />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="questions">Questions or Comments</Label>
-                          <Textarea
-                            id="questions"
-                            placeholder="Any questions about the event?"
-                            value={registrationForm.questions}
-                            onChange={(e) => setRegistrationForm({...registrationForm, questions: e.target.value})}
-                            rows={3}
+                          <Label htmlFor="email">Email *</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your@email.com"
+                            value={registrationForm.email}
+                            onChange={(e) => setRegistrationForm({...registrationForm, email: e.target.value})}
                           />
                         </div>
                       </div>
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsRegistrationOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button onClick={handleRegistration} disabled={isRegistering}>
-                          {isRegistering ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                              Registering...
-                            </>
-                          ) : (
-                            'Complete Registration'
-                          )}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                      </Dialog>
-                    )}
-                  </>
-                )}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Phone Number</Label>
+                          <Input
+                            id="phone"
+                            placeholder="+91 9876543210"
+                            value={registrationForm.phone}
+                            onChange={(e) => setRegistrationForm({...registrationForm, phone: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="organization">Organization</Label>
+                          <Input
+                            id="organization"
+                            placeholder="Company/University"
+                            value={registrationForm.organization}
+                            onChange={(e) => setRegistrationForm({...registrationForm, organization: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="questions">Questions or Comments</Label>
+                        <Textarea
+                          id="questions"
+                          placeholder="Any questions about the event?"
+                          value={registrationForm.questions}
+                          onChange={(e) => setRegistrationForm({...registrationForm, questions: e.target.value})}
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsRegistrationOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleRegistration} disabled={isRegistering}>
+                        {isRegistering ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                            Registering...
+                          </>
+                        ) : (
+                          'Complete Registration'
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                */}
               </div>
             </div>
           </motion.div>

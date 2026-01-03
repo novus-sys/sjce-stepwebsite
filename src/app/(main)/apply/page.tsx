@@ -173,7 +173,7 @@ export default function ApplyPage() {
                             id="firstName" 
                             value={formData.firstName}
                             onChange={(e) => handleInputChange('firstName', e.target.value)}
-                            placeholder="John" 
+                            placeholder="Vikram" 
                             required 
                           />
                         </div>
@@ -183,7 +183,7 @@ export default function ApplyPage() {
                             id="lastName" 
                             value={formData.lastName}
                             onChange={(e) => handleInputChange('lastName', e.target.value)}
-                            placeholder="Doe" 
+                            placeholder="Kumar" 
                             required 
                           />
                         </div>
@@ -195,7 +195,7 @@ export default function ApplyPage() {
                           type="email" 
                           value={formData.email}
                           onChange={(e) => handleInputChange('email', e.target.value)}
-                          placeholder="john@example.com" 
+                          placeholder="Vikram@example.com" 
                           required 
                         />
                       </div>

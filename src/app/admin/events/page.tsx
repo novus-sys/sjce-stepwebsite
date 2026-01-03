@@ -86,6 +86,7 @@ export default function AdminEventsPage() {
     location: '',
     type: '',
     max_attendees: '',
+    registration_link: '',
     featured_image: null as File | null
   })
 
@@ -99,6 +100,7 @@ export default function AdminEventsPage() {
       location: '',
       type: '',
       max_attendees: '',
+      registration_link: '',
       featured_image: null
     })
     setImagePreview(null)
@@ -283,6 +285,7 @@ export default function AdminEventsPage() {
         location: newEvent.location,
         type: newEvent.type || 'workshop',
         max_attendees: newEvent.max_attendees ? parseInt(newEvent.max_attendees) : undefined,
+        registration_link: newEvent.registration_link || undefined,
         featured_image_url: imageUrl || (isEditMode && editingEvent?.featured_image_url ? editingEvent.featured_image_url : undefined)
       }
 
@@ -403,6 +406,7 @@ export default function AdminEventsPage() {
         location: data.location,
         type: data.type || '',
         max_attendees: data.max_attendees?.toString() || '',
+        registration_link: data.registration_link || '',
         featured_image: null // We don't load the existing image file
       })
 
@@ -598,6 +602,7 @@ export default function AdminEventsPage() {
                     <option value="masterclass">Masterclass</option>
                     <option value="competition">Competition</option>
                     <option value="celebration">Celebration</option>
+                    <option value="expo-exhibition">Expo/Exhibition</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -610,6 +615,20 @@ export default function AdminEventsPage() {
                     onChange={(e) => setNewEvent({...newEvent, max_attendees: e.target.value})}
                   />
                 </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="registration_link">Registration Form Link</Label>
+                <Input
+                  id="registration_link"
+                  type="url"
+                  placeholder="e.g., https://forms.gle/abc123 or https://example.com/register"
+                  value={newEvent.registration_link}
+                  onChange={(e) => setNewEvent({...newEvent, registration_link: e.target.value})}
+                />
+                <p className="text-sm text-gray-500">
+                  If provided, the Register button will redirect to this link instead of showing a modal form.
+                </p>
               </div>
               
               {/* Event Images Upload */}
@@ -856,6 +875,7 @@ export default function AdminEventsPage() {
               <option value="masterclass">Masterclass</option>
               <option value="competition">Competition</option>
               <option value="celebration">Celebration</option>
+              <option value="expo-exhibition">Expo/Exhibition</option>
             </select>
           </div>
         </CardContent>

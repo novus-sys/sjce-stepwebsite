@@ -476,6 +476,7 @@ export async function createEvent(eventData: {
   location: string
   type: string
   max_attendees?: number
+  registration_link?: string
   featured_image_url?: string
 }) {
   const supabase = createClient()
@@ -534,6 +535,7 @@ export async function createEvent(eventData: {
         location: eventData.location,
         type: eventData.type,
         max_attendees: eventData.max_attendees,
+        registration_link: eventData.registration_link,
         featured_image_url: eventData.featured_image_url,
         status: 'upcoming'
       })
@@ -562,6 +564,7 @@ export async function updateEvent(eventId: string, eventData: {
   location: string
   type: string
   max_attendees?: number
+  registration_link?: string
   featured_image_url?: string
 }) {
   const supabase = createClient()
@@ -621,6 +624,7 @@ export async function updateEvent(eventId: string, eventData: {
         location: eventData.location,
         type: eventData.type,
         max_attendees: eventData.max_attendees,
+        registration_link: eventData.registration_link,
         featured_image_url: eventData.featured_image_url,
         updated_at: new Date().toISOString()
       })

@@ -1,6 +1,7 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useAuth } from './AuthProvider'
 import { AdminSidebar } from './AdminSidebar'
 import { AdminTopBar } from './AdminTopBar'
@@ -8,6 +9,14 @@ import { AdminTopBar } from './AdminTopBar'
 export function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   const pathname = usePathname()
+  const router = useRouter()
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user && pathname !== '/admin/login') {
+      router.push('/admin/login')
+    }
+  }, [loading, user, pathname, router])
 
   // Show loading spinner
   if (loading) {
@@ -49,7 +58,14 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
     )
   }
 
-  // If not authenticated and not on login page, middleware will redirect
-  return null
+  // Show loading while redirecting
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Redirecting to login...</p>
+      </div>
+    </div>
+  )
 }
 
